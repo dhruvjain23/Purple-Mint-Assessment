@@ -1,12 +1,14 @@
 import express from 'express';
 import { auth } from '../middleware/auth.middleware.js';
 import {Driver} from '../models/drivers.model.js'
+import { connectDB } from '../lib/db.js';
 
 
 const driverRouter = express.Router();
 
 driverRouter.get('/drivers', auth, async (req, res) => {
   try {
+    await connectDB();
     const drivers = await Driver.find();
     res.json(drivers);
   } catch (err) {
@@ -33,6 +35,7 @@ driverRouter.get('/drivers/:id', auth, async (req, res) => {
 
 driverRouter.post('/registerDriver', auth, async (req, res) => {
   try {
+    await connectDB();
     const { name, shift_hours, past_week_hours } = req.body;
     if (!name || typeof shift_hours !== 'number' || !Array.isArray(past_week_hours) || past_week_hours.length !== 7) {
       return res.status(400).json({ error: 'Invalid input: name (string), shift_hours (number), past_week_hours (array of 7 numbers) are required' });

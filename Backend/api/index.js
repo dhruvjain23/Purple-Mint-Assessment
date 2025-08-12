@@ -4,6 +4,9 @@ import dotenv from "dotenv";
 import { authRouter } from "../src/routes/auth.route.js";
 import { driverRouter } from "../src/routes/driver.route.js";
 import { connectDB } from "../src/lib/db.js";
+import { orderRouter } from "../src/routes/order.route.js";
+import { routeRouter } from "../src/routes/route.routes.js";
+import { simulateRouter } from "../src/routes/simulation.route.js";
 
 // Load environment variables from .env file
 dotenv.config();
@@ -17,6 +20,9 @@ app.use(express.json());
 
 app.use('/api/auth', authRouter)
 app.use('/api/driver', driverRouter)
+app.use('/api/order', orderRouter)
+app.use('/api/route', routeRouter)
+app.use('/api/simulation', simulateRouter)
 
 
 // Test route

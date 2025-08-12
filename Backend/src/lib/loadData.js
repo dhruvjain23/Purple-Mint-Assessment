@@ -1,10 +1,9 @@
-const fs = require('fs');
-const csv = require('csv-parser');
-const Driver = require('./models/Driver');
-const Route = require('./models/Route');
-const Order = require('./models/Order');
-const User = require('./models/User');
-const bcrypt = require('bcryptjs');
+import { Driver } from '../models/drivers.model.js';
+import { Route } from '../models/routes.model.js';
+import { Order } from '../models/orders.model.js';
+import fs from 'fs';
+import csv from 'csv-parser';
+
 
 const loadData = async () => {
   // Check if data exists
@@ -43,9 +42,9 @@ const loadData = async () => {
       });
     });
 
-  // Create a default user for auth (username: admin, password: password)
-  const hashedPassword = await bcrypt.hash('password', 10);
-  await User.create({ username: 'admin', password: hashedPassword });
+  // // Create a default user for auth (username: admin, password: password)
+  // const hashedPassword = await bcrypt.hash('password', 10);
+  // await User.create({ username: 'admin', password: hashedPassword });
 };
 
-module.exports = loadData;
+export { loadData };

@@ -7,6 +7,7 @@ import { connectDB } from "../src/lib/db.js";
 import { orderRouter } from "../src/routes/order.route.js";
 import { routeRouter } from "../src/routes/route.routes.js";
 import { simulateRouter } from "../src/routes/simulation.route.js";
+import { loadData } from "../src/lib/loadData.js";
 
 // Load environment variables from .env file
 dotenv.config();

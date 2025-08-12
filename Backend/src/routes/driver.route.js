@@ -19,6 +19,7 @@ driverRouter.get('/drivers', auth, async (req, res) => {
 
 driverRouter.get('/drivers/:id', auth, async (req, res) => {
   try {
+    await connectDB();
     const { id } = req.params;
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({ error: 'Invalid driver ID format' });
@@ -56,6 +57,7 @@ driverRouter.post('/registerDriver', auth, async (req, res) => {
 
 driverRouter.put('/updateDrivers/:id', auth, async (req, res) => {
   try {
+    await connectDB();
     const { id } = req.params;
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({ error: 'Invalid driver ID format' });
@@ -93,6 +95,7 @@ driverRouter.put('/updateDrivers/:id', auth, async (req, res) => {
 
 driverRouter.delete('/deleteDriver/:id', auth, async (req, res) => {
   try {
+    await connectDB();
     const driver = await Driver.findByIdAndDelete(req.params.id);
     if (!driver) return res.status(404).json({ error: 'Driver not found' });
     res.json({ message: 'Driver deleted' });

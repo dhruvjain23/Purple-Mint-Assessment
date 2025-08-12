@@ -1,50 +1,50 @@
-import { Driver } from '../models/drivers.model.js';
-import { Route } from '../models/routes.model.js';
-import { Order } from '../models/orders.model.js';
 import fs from 'fs';
 import csv from 'csv-parser';
+import { Route } from '../models/routes.model.js';
+import { Order } from '../models/orders.model.js';
+import { connectDB } from './db.js';
 
-
-const loadData = async () => {
-  // Check if data exists
-  const driverCount = await Driver.countDocuments();
-  if (driverCount > 0) return;
-
-  // Load drivers
-  fs.createReadStream('./data/drivers.csv')
-    .pipe(csv())
-    .on('data', async (row) => {
-      const past_week_hours = row.past_week_hours.split('|').map(Number);
-      await Driver.create({ name: row.name, shift_hours: Number(row.shift_hours), past_week_hours });
-    });
-
-  // Load routes
-  fs.createReadStream('./data/routes.csv')
-    .pipe(csv())
-    .on('data', async (row) => {
-      await Route.create({
-        route_id: Number(row.route_id),
-        distance_km: Number(row.distance_km),
-        traffic_level: row.traffic_level,
-        base_time_min: Number(row.base_time_min)
-      });
-    });
-
-  // Load orders
-  fs.createReadStream('./data/orders.csv')
-    .pipe(csv())
-    .on('data', async (row) => {
-      await Order.create({
-        order_id: Number(row.order_id),
-        value_rs: Number(row.value_rs),
-        route_id: Number(row.route_id),
-        delivery_time: row.delivery_time
-      });
-    });
-
-  // // Create a default user for auth (username: admin, password: password)
-  // const hashedPassword = await bcrypt.hash('password', 10);
-  // await User.create({ username: 'admin', password: hashedPassword });
+const loadCSV = (filePath, insertFn) => {
+  return new Promise((resolve, reject) => {
+    const items = [];
+    fs.createReadStream(filePath)
+      .pipe(csv())
+      .on('data', (row) => items.push(row))
+      .on('end', async () => {
+        try {
+          await insertFn(items);
+          resolve();
+        } catch (err) {
+          reject(err);
+        }
+      })
+      .on('error', reject);
+  });
 };
 
-export { loadData };
+export const loadData = async () => {
+  await loadCSV('./data/routes.csv', async (rows) => {
+    await connectDB();
+    const routes = rows.map(r => ({
+      route_id: Number(r.route_id),
+      distance_km: Number(r.distance_km),
+      traffic_level: r.traffic_level,
+      base_time_min: Number(r.base_time_min)
+    }));
+    await Route.insertMany(routes);
+    console.log('Routes inserted');
+  });
+
+  await loadCSV('./data/orders.csv', async (rows) => {
+    const orders = rows.map(r => ({
+      order_id: Number(r.order_id),
+      value_rs: Number(r.value_rs),
+      route_id: Number(r.route_id),
+      delivery_time: r.delivery_time
+    }));
+    await Order.insertMany(orders);
+    console.log('Orders inserted');
+  });
+
+  console.log('All CSV data loaded successfully');
+};

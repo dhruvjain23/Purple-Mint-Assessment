@@ -8,7 +8,7 @@ import { connectDB } from '../lib/db.js';
 
 const simulateRouter = express.Router();
 
-simulateRouter.post('/runSimulation', async (req, res) => {
+simulateRouter.post('/runSimulation', auth, async (req, res) => {
   await connectDB();
   const { num_drivers, start_time, max_hours } = req.body;
 

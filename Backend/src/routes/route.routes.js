@@ -18,6 +18,7 @@ routeRouter.get('/getAllRoute', auth, async (req, res) => {
 
 routeRouter.get('/routes/:id', auth, async (req, res) => {
   try {
+    await connectDB();
     const { id } = req.params;
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({ error: 'Invalid route ID format' });
@@ -34,6 +35,7 @@ routeRouter.get('/routes/:id', auth, async (req, res) => {
 
 routeRouter.post('/addroutes', auth, async (req, res) => {
   try {
+    await connectDB();
     const { route_id, distance_km, traffic_level, base_time_min } = req.body;
     if (!route_id || typeof route_id !== 'number' || !distance_km || typeof distance_km !== 'number' || 
         !traffic_level || !['High', 'Medium', 'Low'].includes(traffic_level) || 

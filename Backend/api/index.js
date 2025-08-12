@@ -3,6 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import { authRouter } from "../src/routes/auth.route.js";
 import { driverRouter } from "../src/routes/driver.route.js";
+import { connectDB } from "../src/lib/db.js";
 
 // Load environment variables from .env file
 dotenv.config();
@@ -27,5 +28,6 @@ app.get("/", (req, res) => {
 // Server listen
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
+  connectDB();
   console.log(`Server running on port ${PORT}`);
 });

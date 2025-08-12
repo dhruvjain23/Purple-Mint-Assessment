@@ -3,12 +3,14 @@ import bcrypt from 'bcryptjs';
 import dotenv from 'dotenv';
 import jwt from 'jsonwebtoken';
 import { User } from '../models/user.model.js'; 
+import { connectDB } from '../lib/db.js';
 
 dotenv.config();
 const authRouter = express.Router();
 
 
 authRouter.post('/register', async (req, res) => {
+  await connectDB();
   const { username, password } = req.body;
 
   // Basic validation
@@ -50,6 +52,7 @@ authRouter.post('/register', async (req, res) => {
 
 
 authRouter.post('/login', async (req, res) => {
+  await connectDB();
   const { username, password } = req.body;
   if (!username || !password) return res.status(400).json({ error: 'Missing username or password' });
 
